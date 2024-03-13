@@ -6,6 +6,8 @@
 #include <random>
 
 #include "player.hpp"
+#include "card.hpp"
+#include "typing.hpp"
 
 namespace godot{
 
@@ -13,10 +15,10 @@ class Table : public godot::Node {
     GDCLASS(Table, godot::Node)
 
 public:
-    //std::vector<Card> deck;
-    //std::vector<Card> playedCards;
-    //std::vector<Card> talon;
-    godot::Array players;
+    std::vector<Card> deck;
+    std::vector<Card> playedCards;
+    std::vector<Card> talon;
+    std::vector<Player*> players;
     Player* currentPlayer;
     Player* dealer;
 
@@ -27,9 +29,18 @@ public:
 
     void _init();
 
-    //void shuffleDeck();
-    //void cutDeck();
-    //void dealCards();
+    void shuffleDeck();
+    void cutDeck();
+    void dealCards();
+    void startNewRound();
+    TradeResult handleTrade();
+    Player* determineTrickWinner();
+    bool checkContractFulfillment(Player* player);
+    void handleCardPlayed(Card card);
+    void handleRaspasyPlay();
+    void handleMiserePlay(Player* player);
+    void handleWhistPlay(Player* player);
+
 };
 
 } // namespace godot
