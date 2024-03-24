@@ -22,7 +22,7 @@ public:
     int bullet;
     int mountain;
     int whist;
-    std::vector<Card> hand;
+    std::vector<Card*> hand;
     //Bid currentBid;
 
     static void _bind_methods();
@@ -33,12 +33,13 @@ public:
     void _init();
 
     void discard();
-    Card playCard();
+    //Bid bid(Bid highestBid, bool isFirstBid);
+    Card* playCard();
     bool decideWhist();
     void revealCards();
     //void openCards();
     //bool outOfCards();
-    Move makeMove();
+    int makeMove();
     //void incrementScore();
     //int countTricks();
     //void lose();
