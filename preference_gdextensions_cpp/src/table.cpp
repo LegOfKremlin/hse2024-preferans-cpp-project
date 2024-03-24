@@ -6,6 +6,13 @@ using namespace godot;
 void Table::_bind_methods() {
     ClassDB::bind_method(D_METHOD("shuffleDeck"), &Table::shuffleDeck);
     ClassDB::bind_method(D_METHOD("cutDeck"), &Table::cutDeck);
+    ClassDB::bind_method(D_METHOD("addPlayer"), &Table::addPlayer);
+    ClassDB::bind_method(D_METHOD("startNewRound"), &Table::startNewRound);
+    ClassDB::bind_method(D_METHOD("handleTrade"), &Table::handleTrade);
+    ClassDB::bind_method(D_METHOD("handleCardPlayed"), &Table::handleCardPlayed);
+    ClassDB::bind_method(D_METHOD("handleRaspasyPlay"), &Table::handleRaspasyPlay);
+    ClassDB::bind_method(D_METHOD("handleMiserePlay"), &Table::handleMiserePlay);
+    ClassDB::bind_method(D_METHOD("handleWhistPlay"), &Table::handleWhistPlay);
     ClassDB::bind_method(D_METHOD("dealCards"), &Table::dealCards);
 }
 
@@ -16,17 +23,19 @@ Table::~Table() {}
 void Table::_init() {
     std::random_device rd;
     std::mt19937 g(rd());
-    std::uniform_int_distribution<> distr(0, players.size() - 1);
+    std::uniform_int_distribution<> distr(0, 2);
 
-    int dealerIndex = distr(g);
-    dealer = godot::Object::cast_to<Player>(players[dealerIndex]);
-    currentPlayer = godot::Object::cast_to<Player>(players[(dealerIndex + 1) % players.size()]);
+    dealerIndex = distr(g);
 }
 
 void Table::shuffleDeck() {
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(deck.begin(), deck.end(), g);
+}
+
+void Table::addPlayer(Player* player) {
+	players.push_back(player);
 }
 
 void Table::cutDeck() {
@@ -46,16 +55,18 @@ void Table::dealCards() {
 }
 
 void Table::startNewRound() {
+
+    dealer = godot::Object::cast_to<Player>(players[dealerIndex % players.size()]);
+    currentPlayer = godot::Object::cast_to<Player>(players[(dealerIndex + 1) % players.size()]);
     playedCards.clear();
     talon.clear();
     shuffleDeck();
     cutDeck();
+    dealerIndex++;
     dealCards();
-    dealer = players[(std::find(players.begin(), players.end(), dealer) - players.begin() + 1) % players.size()];
-    currentPlayer = players[(std::find(players.begin(), players.end(), dealer) - players.begin() + 1) % players.size()];
 }
 
-void Table::handleCardPlayed(Card card) {
+void Table::handleCardPlayed(Card* card) {
     auto it = std::find(currentPlayer->hand.begin(), currentPlayer->hand.end(), card);
     if (it != currentPlayer->hand.end()) {
         currentPlayer->hand.erase(it);
@@ -68,24 +79,24 @@ void Table::handleCardPlayed(Card card) {
     }
 }
 
-TradeResult Table::handleTrade() {
+int Table::handleTrade() {
     bool trade_end = false;
-    TradeResult result;
+    int result;
     
     for (int i = 1; i < players.size(); i = (i + 1) % players.size()) {
         int playerIndex = (std::find(players.begin(), players.end(), dealer) - players.begin() + i) % players.size();
         currentPlayer = godot::Object::cast_to<Player>(players[playerIndex]);
-        Move move = currentPlayer->makeMove();
+        Move move = static_cast<Move>(currentPlayer->makeMove());
 
         switch (move) {
         case Move::Bidding:
-            result = TradeResult::SevenSpades;
+            result = static_cast<int>(TradeResult::SevenSpades);
             break;
         case Move::Passout:
-            result = TradeResult::Passout;
+            result = static_cast<int>(TradeResult::Passout);
             break;
         case Move::Misere:
-            result = TradeResult::Misere;
+            result = static_cast<int>(TradeResult::Misere);
             break;
         }
         //case Move::Bidding:
@@ -111,7 +122,7 @@ TradeResult Table::handleTrade() {
     }
 }
 
-//void Table::handleRaspasyPlay() {
+void Table::handleRaspasyPlay() {
 //    for (int i = 0; i < 10; i++) {
 //        for (Player* player : players) {
 //            Card card = player->playCard();
@@ -129,7 +140,7 @@ TradeResult Table::handleTrade() {
 //            player->penalizePoints();
 //        }
 //    }
-//}
+}
 
 void Table::handleMiserePlay(Player* player) {
     TradeResult game = TradeResult::Misere;
@@ -138,7 +149,7 @@ void Table::handleMiserePlay(Player* player) {
 
     for (int i = 0; i < 10; i++) {
         for (Player* player : players) {
-            Card card = player->playCard();
+            Card* card = player->playCard();
         }
 
         Player* trickWinner = determineTrickWinner();
@@ -152,13 +163,13 @@ void Table::handleMiserePlay(Player* player) {
 }
 
 void Table::handleWhistPlay(Player* player) {
-    for (Card card : talon) {
+    for (Card* card : talon) {
         //show talon
     }
 
     player->discard();
 
-    TradeResult game = handleTrade();
+    TradeResult game = static_cast<TradeResult>(handleTrade());
 
     for (Player* otherPlayer : players) {
         if (otherPlayer != player) {
@@ -172,7 +183,7 @@ void Table::handleWhistPlay(Player* player) {
 
     for (int i = 0; i < 10; i++) {
         for (Player* player : players) {
-            Card card = player->playCard();
+            Card* card = player->playCard();
         }
 
         Player* trickWinner = determineTrickWinner();
@@ -187,3 +198,12 @@ void Table::handleWhistPlay(Player* player) {
     }
 }
 
+Player* Table::determineTrickWinner() {
+
+    return nullptr;
+}
+
+bool Table::checkContractFulfillment(Player* player) {
+
+    return false;
+}
