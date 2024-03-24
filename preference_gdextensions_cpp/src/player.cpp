@@ -1,4 +1,5 @@
 #include "player.hpp"
+#include "typing.hpp"
 
 using namespace godot;
 
@@ -23,15 +24,19 @@ void Player::discard() {
     hand.erase(std::find(hand.begin(), hand.end(), card2));
 }
 
-Card Player::playCard() {
+Card* Player::playCard() {
     //choice should be given
-    Card chosenCard;
+    Card* chosenCard = nullptr;
 
     return chosenCard;
 }
 
-Move Player::makeMove() {
-    return Move::Passout;
+void Player::revealCards() {
+
+}
+
+int Player::makeMove() {
+    return static_cast<int>(Move::Passout);
 }
 
 bool Player::decideWhist() {
