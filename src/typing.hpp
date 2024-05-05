@@ -1,11 +1,14 @@
 #ifndef TYPIING_HPP_
 #define TYPIING_HPP_
 
+#include <string>
+
 enum class Move {
     Bidding,
     Passout,
     Misere,
 };
+
 
 enum class TradeResult {
     Passout,
@@ -41,5 +44,7 @@ enum class TradeResult {
     TenSpadesWithoutTalon,
     TenNoTrumpWithoutTalon
 };
+
+std::string tradeResultToString(TradeResult result);
 
 #endif // TYPIING_HPP_
