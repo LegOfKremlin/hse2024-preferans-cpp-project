@@ -1,11 +1,20 @@
 #include "table.hpp"
 
-Table::Table() {
+Table::Table() : currentPlayer(nullptr), dealer(nullptr), trumpSuit(Suit::Hearts) {
     std::random_device rd;
     std::mt19937 g(rd());
     std::uniform_int_distribution<> distr(0, 2);
 
     dealerIndex = distr(g);
+
+    for (int suit = 0; suit < 4; suit++) {
+        for (int rank = 0; rank < 8; rank++) {
+            Card* card = new Card();
+            card->suit = static_cast<Suit>(suit);
+            card->rank = static_cast<Rank>(rank);
+            deck.push_back(card);
+        }
+    }
 }
 
 Table::~Table() {
@@ -48,15 +57,20 @@ void Table::dealCards() {
 }
 
 void Table::startNewRound() {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::uniform_int_distribution<> distr(0, 2);
+
+    dealerIndex = distr(g);
 
     dealer = players[dealerIndex % players.size()];
     currentPlayer = players[(dealerIndex + 1) % players.size()];
-    playedCards.clear();
+   /* playedCards.clear();
     talon.clear();
     shuffleDeck();
     cutDeck();
     dealerIndex++;
-    dealCards();
+    dealCards();*/
 }
 
 void Table::handleCardPlayed(Card* card) {
@@ -65,7 +79,8 @@ void Table::handleCardPlayed(Card* card) {
         currentPlayer->hand.erase(it);
         playedCards.push_back(card);
         //next player
-        currentPlayer = players[(std::find(players.begin(), players.end(), currentPlayer) - players.begin() + 1) % players.size()];
+        int currentPlayerIndex = std::find(players.begin(), players.end(), currentPlayer) - players.begin();
+        currentPlayer = players[(currentPlayerIndex + 1) % players.size()];
     }
     else {
         // exception ??
