@@ -1,0 +1,13 @@
+Camera2D
+Label
+Button
+ParallaxLayer
+ParallaxBackground
+Sprite2D
+CollisionShape2D
+CharacterBody2D
+PointLight2D
+DirectionalLight2D
+ColorRect
+Node2D
+Area2D
