@@ -35,6 +35,10 @@ public:
     void handleRaspasyPlay();
     void handleMiserePlay(Player* player);
     void handleWhistPlay(Player* player);
+
+    Player* getCurrentPlayer() {
+        return currentPlayer;
+    }
 };
 
 #endif // TABLE_HPP_
