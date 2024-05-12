@@ -20,6 +20,10 @@ public:
             do {
                 std::cout << "Please, enter the name of player " << i + 1 << ": ";
                 std::cin >> name;
+                if (std::cin.eof()) {
+					std::cin.clear();
+                    name = "noname";
+                }
             } while (names.find(name) != names.end());
             names.insert(name);
 
@@ -33,15 +37,29 @@ public:
         std::cout << "Dealer: " << table->dealer->name << std::endl;
         std::cout << "First move goes to: " << table->currentPlayer->name << std::endl;
 
-		table->shuffleDeck();
+        table->shuffleDeck();
         table->dealCards();
 
         for (auto player : table->players) {
             player->showCards();
         }
 
-        TradeResult bid = table->players[0]->makeBid(TradeResult::Passout, true);
-        std::cout << "First player bid: " << tradeResultToString(bid) << std::endl;
+        int tradeResult = table->handleTrade();
+
+        switch (tradeResult) {
+        case static_cast<int>(TradeResult::Passout):
+            std::cout << "All players passed. Playing Raspass.\n";
+            table->handleRaspasyPlay();
+            break;
+        case static_cast<int>(TradeResult::Misere):
+            std::cout << "Misere declared. Playing Misere.\n";
+            table->handleMiserePlay(table->getCurrentPlayer());
+            break;
+        default:
+            std::cout << "Playing Whist.\n";
+            table->handleWhistPlay(table->getCurrentPlayer());
+            break;
+        }
     }
 };
 
