@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "table.hpp"
 
 Table::Table() : currentPlayer(nullptr), dealer(nullptr), trumpSuit(Suit::Hearts) {
@@ -104,7 +106,7 @@ int Table::handleTrade() {
         switch (bid) {
         case TradeResult::Passout:
             passCount++;
-            if (passCount == players.size() - 1) {
+            if (passCount == players.size()) {
                 trade_end = true;
                 result = static_cast<int>(TradeResult::Passout);
             }
@@ -133,30 +135,39 @@ int Table::handleTrade() {
             if (lastSignificantMove == Move::Bidding) {
                 trumpSuit = lastPlayerMadeSignificantMove->getBidSuit();
             }
+
             return result;
         }
     }
-    return static_cast<int>(TradeResult::SevenSpades); // default return
+    //return static_cast<int>(TradeResult::SevenSpades); // default return
 }
 
 void Table::handleRaspasyPlay() {
-//    for (int i = 0; i < 10; i++) {
-//        for (Player* player : players) {
-//            Card card = player->playCard();
-//        }
-//
-//        Player* trickWinner = determineTrickWinner();
-//    }
-//
-//    for (Player* player : players) {
-//        bool tookTrick = checkIfPlayerTookTrick(player);
-//        if (!tookTrick) {
-//            player->awardPoints();
-//        }
-//        else {
-//            player->penalizePoints();
-//        }
-//    }
+    for (int i = 0; i < 10; i++) {
+        for (Player* player : players) {
+            std::cout << player->name << ", it's your turn to play a card.\n";
+            Card* card = player->playCard();
+            playedCards.push_back(card);
+            std::cout << player->name << " played " << card->toString() << ".\n";
+        }
+
+        Player* trickWinner = determineTrickWinner();
+        trickWinner->incrementTrickCount();
+        std::cout << trickWinner->name << " won the trick.\n";
+    }
+
+    for (Player* player : players) {
+        int trickCount = player->getTrickCount();
+        if (trickCount == 0) {
+            std::cout << player->name << " didn't take any tricks and gets a bonus!\n";
+            player->awardPoints();
+        }
+        else {
+            std::cout << player->name << " took " << trickCount << " tricks and gets penalized.\n";
+            player->penalizePoints(trickCount);
+        }
+        player->resetTrickCount();
+    }
 }
 
 void Table::handleMiserePlay(Player* player) {
