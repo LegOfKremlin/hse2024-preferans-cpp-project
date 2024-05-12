@@ -93,34 +93,40 @@ int Table::handleTrade() {
     Move lastSignificantMove = Move::Passout;
     Player* lastPlayerMadeSignificantMove = nullptr;
     int passCount = 0;
+    TradeResult highestBid = TradeResult::Passout;
 
     for (int i = 1; i < players.size(); i = (i + 1) % players.size()) {
         int playerIndex = (std::find(players.begin(), players.end(), dealer) - players.begin() + i) % players.size();
         currentPlayer = players[playerIndex];
-        Move move = static_cast<Move>(currentPlayer->makeMove());
+        TradeResult bid = currentPlayer->makeBid(highestBid, i == 1);
 
-        switch (move) {
-        case Move::Bidding:
-            if (move > lastSignificantMove) {
-                lastSignificantMove = move;
-                lastPlayerMadeSignificantMove = currentPlayer;
-            }
-            break;
-        case Move::Passout:
+
+        switch (bid) {
+        case TradeResult::Passout:
             passCount++;
             if (passCount == players.size() - 1) {
                 trade_end = true;
                 result = static_cast<int>(TradeResult::Passout);
             }
             break;
-        case Move::Misere:
-            if (lastSignificantMove == Move::Passout) {
-                lastSignificantMove = move;
+        case TradeResult::Misere:
+            if (highestBid == TradeResult::Passout) {
+                highestBid = bid;
                 lastPlayerMadeSignificantMove = currentPlayer;
                 trade_end = true;
                 result = static_cast<int>(TradeResult::Misere);
             }
             break;
+        default:
+            if (static_cast<int>(bid) > static_cast<int>(highestBid)) {
+                highestBid = bid;
+                lastPlayerMadeSignificantMove = currentPlayer;
+            }
+            break;
+        }
+
+        if (static_cast<int>(bid) > static_cast<int>(highestBid)) {
+            highestBid = bid;
         }
 
         if (trade_end) {
@@ -158,7 +164,7 @@ void Table::handleMiserePlay(Player* player) {
 
     player->revealCards();
 
-    for (int i = 0; i < 10; i++) {
+    /*for (int i = 0; i < 10; i++) {
         for (Player* player : players) {
             Card* card = player->playCard();
         }
@@ -170,7 +176,7 @@ void Table::handleMiserePlay(Player* player) {
     if (contractFulfilled) {
     }
     else {
-    }
+    }*/
 }
 
 void Table::handleWhistPlay(Player* player) {
