@@ -19,13 +19,40 @@ void Player::discard() {
 }
 
 Card* Player::playCard() {
-    // For now, we just return the first card in the hand
-    if (!hand.empty()) {
-        Card* card = hand.front();
-        hand.erase(hand.begin());
-        return card;
+    if (hand.empty()) {
+        return nullptr;
     }
-    return nullptr;
+
+    while (true) {
+        std::cout << name << ", please enter the card you want to play in the format '{Rank} of {Suit}'.\n";
+        std::string rankString, ofString, suitString;
+        std::cin >> rankString >> ofString >> suitString;
+
+        try {
+            if (ofString != "of") {
+                throw std::invalid_argument("Invalid format");
+            }
+
+            Rank rank = stringToRank(rankString);
+            Suit suit = stringToSuit(suitString);
+
+            auto it = std::find_if(hand.begin(), hand.end(), [rank, suit](Card* card) {
+                return card->rank == rank && card->suit == suit;
+                });
+
+            if (it != hand.end()) {
+                Card* card = *it;
+                hand.erase(it);
+                return card;
+            }
+            else {
+                std::cout << "You don't have that card. Please choose another card.\n";
+            }
+        }
+        catch (const std::invalid_argument& e) {
+            std::cout << e.what() << ". Please enter a valid card in the format '{Rank} of {Suit}'.\n";
+        }
+    }
 }
 
 void Player::revealCards() {
@@ -174,12 +201,25 @@ TradeResult Player::makeBid(TradeResult highestBid, bool isFirstBid) {
     return userBid;
 }
 
-//int Player::makeMove() {
-//    return static_cast<int>(Move::Passout);
-//}
 
-int Player::makeMove() {
-    return 0;
+void Player::incrementTrickCount() {
+    trickCount++;
+}
+
+void Player::awardPoints() {
+    score += 1/*awardPointsForNoTricks*/;
+}
+
+void Player::penalizePoints(int trickCount) {
+    score -= trickCount/* * penaltyPointsPerTrick*/;
+}
+
+void Player::resetTrickCount() {
+    trickCount = 0;
+}
+
+int Player::getTrickCount() {
+    return trickCount;
 }
 
 bool Player::decideWhist() {
