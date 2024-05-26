@@ -55,18 +55,30 @@ Card* Player::playCard() {
     }
 }
 
-void Player::revealCards() {
-    std::cout << "Let's reveal " << name << "'s cards:\n";
-    for (auto card : hand) {
-        std::cout << rankToString(card->rank) << " of " << suitToString(card->suit) << ", ";
+void Player::showCards() {
+    std::cout << name << "'s cards: ";
+    for (int i = 0; i < hand.size(); i++) {
+        std::cout << rankToString(hand[i]->rank) << " of " << suitToString(hand[i]->suit);
+        if (i < hand.size() - 1) {
+            std::cout << ", ";
+        }
+        else {
+            std::cout << ".";
+        }
     }
     std::cout << std::endl;
 }
 
-void Player::showCards() {
-    std::cout << name << "'s cards: ";
-    for (auto card : hand) {
-        std::cout << rankToString(card->rank) << " of " << suitToString(card->suit) << ", ";
+void Player::revealCards() {
+    std::cout << "Let's reveal " << name << "'s cards:\n";
+    for (int i = 0; i < hand.size(); i++) {
+        std::cout << rankToString(hand[i]->rank) << " of " << suitToString(hand[i]->suit);
+        if (i < hand.size() - 1) {
+            std::cout << ", ";
+        }
+        else {
+            std::cout << ".";
+        }
     }
     std::cout << std::endl;
 }
@@ -86,114 +98,119 @@ TradeResult Player::makeBid(TradeResult highestBid, bool isFirstBid) {
             break;
         }
 
-
-        if (bidString == "pass") {
+        if (bidString == "Pass") {
             userBid = TradeResult::Passout;
         }
-        else if (bidString == "misere") {
+        else if (bidString == "Misere") {
             userBid = TradeResult::Misere;
         }
-        else if (bidString == "miserewithouttalon") {
+        else if (bidString == "Miserewithouttalon") {
             userBid = TradeResult::MisereWithoutTalon;
         }
-        else if (bidString == "sixspades") {
+        else if (bidString == "Sixspades") {
             userBid = TradeResult::SixSpades;
         }
-        else if (bidString == "sixclubs") {
+        else if (bidString == "Sixclubs") {
             userBid = TradeResult::SixClubs;
         }
-        else if (bidString == "sixdiamonds") {
+        else if (bidString == "Sixdiamonds") {
             userBid = TradeResult::SixDiamonds;
         }
-        else if (bidString == "sixhearts") {
+        else if (bidString == "Sixhearts") {
             userBid = TradeResult::SixHearts;
         }
-        else if (bidString == "sixnotrump") {
+        else if (bidString == "Sixnotrump") {
             userBid = TradeResult::SixNoTrump;
         }
-        else if (bidString == "sevenspades") {
+        else if (bidString == "Sevenspades") {
             userBid = TradeResult::SevenSpades;
         }
-        else if (bidString == "sevenclubs") {
+        else if (bidString == "Sevenclubs") {
             userBid = TradeResult::SevenClubs;
         }
-        else if (bidString == "sevendiamonds") {
+        else if (bidString == "Sevendiamonds") {
             userBid = TradeResult::SevenDiamonds;
         }
-        else if (bidString == "sevenhearts") {
+        else if (bidString == "Sevenhearts") {
             userBid = TradeResult::SevenHearts;
         }
-        else if (bidString == "sevennotrump") {
+        else if (bidString == "Sevennotrump") {
             userBid = TradeResult::SevenNoTrump;
         }
-        else if (bidString == "eightspades") {
+        else if (bidString == "Eightspades") {
             userBid = TradeResult::EightSpades;
         }
-        else if (bidString == "eightclubs") {
+        else if (bidString == "Eightclubs") {
             userBid = TradeResult::EightClubs;
         }
-        else if (bidString == "eightdiamonds") {
+        else if (bidString == "Eightdiamonds") {
             userBid = TradeResult::EightDiamonds;
         }
-        else if (bidString == "eighthearts") {
+        else if (bidString == "Eighthearts") {
             userBid = TradeResult::EightHearts;
         }
-        else if (bidString == "eightnotrump") {
+        else if (bidString == "Eightnotrump") {
             userBid = TradeResult::EightNoTrump;
         }
-        else if (bidString == "ninespades") {
+        else if (bidString == "Ninespades") {
             userBid = TradeResult::NineSpades;
         }
-        else if (bidString == "nineclubs") {
+        else if (bidString == "Nineclubs") {
             userBid = TradeResult::NineClubs;
         }
-        else if (bidString == "ninediamonds") {
+        else if (bidString == "Ninediamonds") {
             userBid = TradeResult::NineDiamonds;
         }
-        else if (bidString == "ninehearts") {
+        else if (bidString == "Ninehearts") {
             userBid = TradeResult::NineHearts;
         }
-        else if (bidString == "ninenotrump") {
+        else if (bidString == "Ninenotrump") {
             userBid = TradeResult::NineNoTrump;
         }
-        else if (bidString == "tenspades") {
+        else if (bidString == "Tenspades") {
             userBid = TradeResult::TenSpades;
         }
-        else if (bidString == "tenclubs") {
+        else if (bidString == "Tenclubs") {
             userBid = TradeResult::TenClubs;
         }
-        else if (bidString == "tendiamonds") {
+        else if (bidString == "Tendiamonds") {
             userBid = TradeResult::TenDiamonds;
         }
-        else if (bidString == "tenhearts") {
+        else if (bidString == "Tenhearts") {
             userBid = TradeResult::TenHearts;
         }
-        else if (bidString == "tennotrump") {
+        else if (bidString == "Tennotrump") {
             userBid = TradeResult::TenNoTrump;
         }
-        else if (bidString == "ninespadeswithouttalon") {
+        else if (bidString == "Ninespadeswithouttalon") {
             userBid = TradeResult::NineSpadesWithoutTalon;
         }
-        else if (bidString == "ninenotrumpwithouttalon") {
+        else if (bidString == "Ninenotrumpwithouttalon") {
             userBid = TradeResult::NineNoTrumpWithoutTalon;
         }
-        else if (bidString == "tenspadeswithouttalon") {
+        else if (bidString == "Tenspadeswithouttalon") {
             userBid = TradeResult::TenSpadesWithoutTalon;
         }
-        else if (bidString == "tennotrumpwithouttalon") {
+        else if (bidString == "Tennotrumpwithouttalon") {
             userBid = TradeResult::TenNoTrumpWithoutTalon;
+            std::cout << name << " has bid " << tradeResultToString(userBid) << "It's the highest bid possible.\n";
+            return userBid;
         }
 
-        if (userBid == TradeResult::Passout && bidString != "pass") {
+        if (userBid == TradeResult::Passout && bidString != "Pass") {
             std::cout << "Invalid bid. Please make another bid.\n";
             continue;
         }
-
-        if (static_cast<int>(userBid) < static_cast<int>(highestBid)) {
+        else if (userBid == TradeResult::Passout && bidString == "Pass") {
+            std::cout << name << " has bid pass.\n";
+            return userBid;
+        }
+        else if (static_cast<int>(userBid) < static_cast<int>(highestBid)) {
             std::cout << "You cannot make a bid lower than the highest bid. Please make another bid.\n";
         }
         else {
             validBid = true;
+            bidNumber = tradeResultToBidNumber(userBid);
         }
     }
 
@@ -225,8 +242,4 @@ int Player::getTrickCount() {
 bool Player::decideWhist() {
     //would player whist?
     return true;
-}
-
-Suit Player::getBidSuit() const {
-    return Suit::Hearts;
 }
