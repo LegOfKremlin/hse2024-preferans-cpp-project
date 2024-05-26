@@ -35,6 +35,9 @@ public:
     void handleRaspasyPlay();
     void handleMiserePlay(Player* player);
     void handleWhistPlay(Player* player);
+    void showTalon();
+
+    int getRequiredTricksForWhist(int bidNumber);
 
     Player* getCurrentPlayer() {
         return currentPlayer;
