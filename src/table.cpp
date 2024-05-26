@@ -58,6 +58,20 @@ void Table::dealCards() {
     deck.clear();
 }
 
+void Table::showTalon() {
+    std::cout << "Talon cards: ";
+    for (int i = 0; i < talon.size(); i++) {
+        std::cout << rankToString(talon[i]->rank) << " of " << suitToString(talon[i]->suit);
+        if (i < talon.size() - 1) {
+            std::cout << ", ";
+        }
+        else {
+            std::cout << ".";
+        }
+    }
+    std::cout << std::endl;
+}
+
 void Table::startNewRound() {
     std::random_device rd;
     std::mt19937 g(rd());
@@ -102,11 +116,10 @@ int Table::handleTrade() {
         currentPlayer = players[playerIndex];
         TradeResult bid = currentPlayer->makeBid(highestBid, i == 1);
 
-
         switch (bid) {
         case TradeResult::Passout:
             passCount++;
-            if (passCount == players.size()) {
+            if (passCount == 2) {
                 trade_end = true;
                 result = static_cast<int>(TradeResult::Passout);
             }
@@ -124,22 +137,28 @@ int Table::handleTrade() {
                 highestBid = bid;
                 lastPlayerMadeSignificantMove = currentPlayer;
             }
+            passCount = 0; // reset pass count when a significant bid is made
             break;
         }
 
-        if (static_cast<int>(bid) > static_cast<int>(highestBid)) {
-            highestBid = bid;
+        if (passCount == players.size() - 1 && highestBid != TradeResult::Passout) {
+            return static_cast<int>(highestBid);
         }
 
-        if (trade_end) {
-            if (lastSignificantMove == Move::Bidding) {
-                trumpSuit = lastPlayerMadeSignificantMove->getBidSuit();
-            }
+        //if (static_cast<int>(bid) > static_cast<int>(highestBid)) {
+        //    highestBid = bid;
+        //}
 
-            return result;
-        }
+        //if (trade_end) {
+        //    if (lastSignificantMove == Move::Bidding) {
+        //        trumpSuit = lastPlayerMadeSignificantMove->getBidSuit();
+        //    }
+
+        //    return result;
+        //}
     }
     //return static_cast<int>(TradeResult::SevenSpades); // default return
+    return static_cast<int>(highestBid);
 }
 
 void Table::handleRaspasyPlay() {
@@ -190,39 +209,36 @@ void Table::handleMiserePlay(Player* player) {
     }*/
 }
 
-void Table::handleWhistPlay(Player* player) {
-    for (Card* card : talon) {
-        //show talon
-    }
+void Table::handleWhistPlay(Player* dealer) {
+    size_t dealerIndex = std::find(players.begin(), players.end(), dealer) - players.begin();
 
-    player->discard();
+    for (int round = 0; round < 10; round++) {
+        for (size_t i = 1; i <= players.size(); i++) {
+            currentPlayer = players[(dealerIndex + i) % players.size()];
 
-    TradeResult game = static_cast<TradeResult>(handleTrade());
+            Card* card = currentPlayer->playCard();
+            playedCards.push_back(card);
 
-    for (Player* otherPlayer : players) {
-        if (otherPlayer != player) {
-            bool whist = otherPlayer->decideWhist();
-            if (whist) {
-            }
-            else {
-            }
-        }
-    }
-
-    for (int i = 0; i < 10; i++) {
-        for (Player* player : players) {
-            Card* card = player->playCard();
+            std::cout << currentPlayer->name << " played " << rankToString(card->rank) << " of " << suitToString(card->suit) << std::endl;
         }
 
         Player* trickWinner = determineTrickWinner();
+        trickWinner->incrementTrickCount();
+        std::cout << trickWinner->name << " won the trick.\n";
+
+        dealerIndex = std::find(players.begin(), players.end(), trickWinner) - players.begin();
     }
 
-    bool contractFulfilled = checkContractFulfillment(player);
-    if (contractFulfilled) {
-
-    }
-    else {
-
+    for (Player* player : players) {
+        if (player != dealer && player->getTrickCount() >= getRequiredTricksForWhist(dealer->getBidNumber())) {
+            std::cout << player->name << " fulfilled the contract.\n";
+            player->awardPoints();
+        }
+        else {
+            std::cout << player->name << " did not fulfill the contract.\n";
+            player->penalizePoints(player->getTrickCount());
+        }
+        player->resetTrickCount();
     }
 }
 
@@ -252,4 +268,20 @@ Player* Table::determineTrickWinner() {
 bool Table::checkContractFulfillment(Player* player) {
 
     return false;
+}
+
+int Table::getRequiredTricksForWhist(int bidNumber) {
+    switch (bidNumber) {
+    case 6:
+        return 4; // Если ставка была 6, вистующие должны взять 4 взятки
+    case 7:
+        return 2; // Если ставка была 7, вистующие должны взять 2 взятки
+    case 8:
+    case 9:
+        return 1; // Если ставка была 8 или 9, вистующие должны взять 1 взятку
+    case 10:
+        return 0; // Если ставка была 10, вистующие не имеют обязательств
+    default:
+        return 0; // Для всех остальных случаев, вистующие не имеют обязательств
+    }
 }
