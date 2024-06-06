@@ -1,36 +1,42 @@
-#ifndef GAME_SERVER_HPP_
-#define GAME_SERVER_HPP_
-
-#include <vector>
-#include <algorithm>
-#include <random>
-#include <boost/asio/ip/tcp.hpp>
-
-#include "table.hpp"
-#include "player.hpp"
-
-class GameServer {
-public:
-    Table* table;
-    std::vector<Player*> players;
-
-    GameServer();
-    ~GameServer();
-
-    void startGame();
-    void handleRound();
-    void handleBidding();
-    void handleRaspasyPlay();
-    void handleMiserePlay(Player* player);
-    Player* determineRoundWinner();
-    void handleWhist();
-    void handlePass();
-    void handleSettings();
-    void revealTalon();
-    void endGame();
-    void handleGamePlay();
-    void handlePlayerAction(Player* player, Card* card);
-    Player* determineBidWinner();
-};
-
-#endif // GAME_SERVER_HPP_
+//#ifndef SERVER_HPP_
+//#define SERVER_HPP_
+//
+//#include <boost/asio.hpp>
+//#include "table.hpp"
+//#include "player.hpp"
+//
+//using boost::asio::ip::tcp;
+//
+//class Session : public std::enable_shared_from_this<Session> {
+//public:
+//    Session(tcp::socket socket, Player* player, Table* table);
+//
+//    void start();
+//
+//private:
+//    void do_read();
+//    void do_write(const std::string& message);
+//
+//    tcp::socket socket_;
+//    boost::asio::streambuf buffer_;
+//    Player* player_;
+//    Table* table_;
+//};
+//
+//class GameServer {
+//public:
+//    
+//    GameServer(boost::asio::io_service& io_service, short port);
+//    ~GameServer();
+//    void startNewGame();
+//
+//private:
+//    void do_accept();
+//
+//    tcp::acceptor acceptor_;
+//    tcp::socket socket_;
+//    Table* table;
+//    std::vector<Player*> players;
+//};
+//
+//#endif // SERVER_HPP_

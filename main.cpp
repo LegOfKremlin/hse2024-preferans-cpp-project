@@ -1,58 +1,73 @@
-#include "server.hpp"
+#include <iostream>
+#include <set>
+#include <string>
+
 #include "player.hpp"
 #include "table.hpp"
 #include "card.hpp"
 
-#include <iostream>
-
 class ConsoleGame {
 public:
-    void startGame() {
-        GameServer server;
-        Table table;
-        server.table = &table;
 
-        // Добавляем игроков
-        for (int i = 0; i < 4; i++) {
+    Table* table;
+
+    void startNewGame() {
+        
+        table = new Table();
+
+        std::set<std::string> names;
+        for (int i = 0; i < 3; i++) {
+            std::string name;
+            do {
+                std::cout << "Please, enter the name of player " << i + 1 << ": ";
+                std::cin >> name;
+                if (std::cin.eof()) {
+					std::cin.clear();
+                    name = "noname";
+                }
+            } while (names.find(name) != names.end());
+            names.insert(name);
+
             Player* player = new Player();
-            table.addPlayer(player);
+            player->name = name;
+            table->addPlayer(player);
         }
 
-        // Запускаем игру
-        table.startNewRound();
+        table->startNewRound();
 
-        // Основной игровой цикл
-        while (true) {
-            // Обрабатываем ходы игроков
-            for (Player* player : table.players) {
-                Card* card = player->playCard();
-                table.handleCardPlayed(card);
-            }
+        std::cout << "Dealer: " << table->dealer->name << std::endl;
+        std::cout << "First move goes to: " << table->currentPlayer->name << std::endl;
 
-            // Проверяем, закончилась ли игра
-            if (gameOver()) {
-                break;
-            }
+        table->shuffleDeck();
+        table->dealCards();
+        table->showTalon();
+
+        for (auto player : table->players) {
+            player->showCards();
         }
 
-        // Определяем победителя
-        Player* winner = determineWinner();
-        std::cout << "Winner is: " << winner->name << std::endl;
-    }
+        int tradeResult = table->handleTrade();
 
-    bool gameOver() {
-        // Здесь должна быть логика определения окончания игры
-        return false;
-    }
-
-    Player* determineWinner() {
-        // Здесь должна быть логика определения победителя
-        return nullptr;
+        switch (tradeResult) {
+        case static_cast<int>(TradeResult::Passout):
+            std::cout << "All players passed. Playing Raspass.\n";
+            table->handleRaspasyPlay();
+            break;
+        case static_cast<int>(TradeResult::Misere):
+            std::cout << "Misere declared. Playing Misere.\n";
+            table->handleMiserePlay(table->getCurrentPlayer());
+            break;
+        default:
+            std::cout << "Playing Whist.\n";
+            table->handleWhistPlay(table->getCurrentPlayer());
+            break;
+        }
     }
 };
 
 int main() {
     ConsoleGame game;
-    game.startGame();
+    game.startNewGame();
+
     return 0;
 }

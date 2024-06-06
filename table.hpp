@@ -35,6 +35,14 @@ public:
     void handleRaspasyPlay();
     void handleMiserePlay(Player* player);
     void handleWhistPlay(Player* player);
+    void showTalon();
+    void handlePlayerMove(Player* player);
+
+    int getRequiredTricksForWhist(int bidNumber);
+
+    Player* getCurrentPlayer() {
+        return currentPlayer;
+    }
 };
 
 #endif // TABLE_HPP_
